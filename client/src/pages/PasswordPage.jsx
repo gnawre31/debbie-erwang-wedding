@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../stores/useAuthStore";
+import { checkPassword } from "../helper";
 
-const PASSWORD = "test"
 
 const PasswordPage = () => {
     const [password, setPassword] = useState("");
@@ -12,9 +12,9 @@ const PasswordPage = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        if (password === PASSWORD) {
-            login(password);
+        const validPassword = checkPassword(password)
+        if (validPassword) {
+            login();
             navigate("/");
         } else {
             setShowModal(true); // Show modal if the password is incorrect
