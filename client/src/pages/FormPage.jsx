@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
+import axios from "axios";
 
 const COOKIE_NAME = "rsvpData";
 
@@ -70,13 +71,13 @@ const FormPage = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (validateForm()) {
-            console.log("RSVP Submitted:", formData);
-
+            const response = await axios.post("http://localhost:8080/submit", formData);
+            console.log("RSVP Submitted:", response.data);
             // Save form data to a cookie
-            Cookies.set(COOKIE_NAME, JSON.stringify(formData), { expires: 7 });
+            Cookies.set(COOKIE_NAME, JSON.stringify(formData), { expires: 180 });
 
             setIsCleared(false); // Reset clear message if user submits again
             setShowForm(false); // Hide form after submission
@@ -157,8 +158,8 @@ const FormPage = () => {
                                 <button
                                     type="button"
                                     className={`w-1/2 p-3 rounded-lg border ${formData.rsvp
-                                            ? "bg-pink-500 text-white border-pink-500"
-                                            : "border-gray-400 text-gray-700 hover:border-pink-500"
+                                        ? "bg-pink-500 text-white border-pink-500"
+                                        : "border-gray-400 text-gray-700 hover:border-pink-500"
                                         }`}
                                     onClick={() => handleRSVP(true)}
                                 >
@@ -167,8 +168,8 @@ const FormPage = () => {
                                 <button
                                     type="button"
                                     className={`w-1/2 p-3 rounded-lg border ${formData.rsvp === false
-                                            ? "bg-gray-400 text-white border-gray-400"
-                                            : "border-gray-400 text-gray-700 hover:border-pink-500"
+                                        ? "bg-gray-400 text-white border-gray-400"
+                                        : "border-gray-400 text-gray-700 hover:border-pink-500"
                                         }`}
                                     onClick={() => handleRSVP(false)}
                                 >
