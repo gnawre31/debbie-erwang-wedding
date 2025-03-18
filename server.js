@@ -36,12 +36,6 @@ app.post("/submit", async (req, res) => {
             },
             email: { email: data.email },
             rsvp: { checkbox: data.rsvp },
-            food_preference: {
-              rich_text: [{ text: { content: data.food_preference } }],
-            },
-            additional_guests: {
-              rich_text: [{ text: { content: data.additional_guests } }],
-            },
             additional_notes: {
               rich_text: [{ text: { content: data.additional_notes } }],
             },
