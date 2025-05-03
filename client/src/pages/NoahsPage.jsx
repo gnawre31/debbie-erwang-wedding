@@ -74,7 +74,7 @@ const NoahsPage = () => {
         >
           <div className="max-w-2xl w-full text-center flex flex-col justify-between h-full">
             <div>
-              <h1 className="text-4xl mt-24 font-bold" style={{ fontFamily: 'Mono' }}>
+              <h1 className="text-4xl mt-24" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 Saturday, March 28, 2026
               </h1>
               <div className="text-lg">
@@ -90,7 +90,7 @@ const NoahsPage = () => {
                     { label: 'Seconds', value: countdown.seconds },
                   ].map((unit, index) => (
                     <div key={index} className="flex flex-col items-center w-20">
-                      <span className="text-2xl font-bold" style={{ fontFamily: 'Mono' }}>
+                      <span className="text-2xl font-bold" style={{ fontFamily: 'Space Mono, monospace' }}>
                         {unit.value.toString().padStart(2, '0')}
                       </span>
                       <span className="text-sm text-gray-600 uppercase tracking-wide mt-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
