@@ -75,17 +75,25 @@ const FormPage = () => {
         e.preventDefault();
         if (!validateForm()) return;
 
+        // notion
+        // email SES
         setLoading(true);
         try {
             await axios.post("https://1arde36ene.execute-api.us-east-1.amazonaws.com/Prod/rsvp", formData);
             Cookies.set(COOKIE_NAME, JSON.stringify(formData), { expires: 180 });
             setIsCleared(false);
             setShowForm(false);
+
+            await axios.post("https://1arde36ene.execute-api.us-east-1.amazonaws.com/Prod/confirm", formData)
+
+
         } catch (error) {
             console.error("Error submitting form", error);
         } finally {
             setLoading(false);
         }
+
+
     };
 
 
