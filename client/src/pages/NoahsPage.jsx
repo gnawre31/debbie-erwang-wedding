@@ -1,44 +1,73 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for routing
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MapPin, Wine, HelpCircle } from 'lucide-react';
-import Cookies from 'js-cookie'; // Import js-cookie to check RSVP status
+import Cookies from 'js-cookie';
 
 // Constant must match the one used in FormPage.jsx
 const COOKIE_NAME = "rsvpData";
+const AUTOPLAY_DELAY = 3000; // 3 seconds
 
 // --- Home Page Component ---
-// This component now receives no props and uses useNavigate internally
 const NoahsPage = () => {
-  const navigate = useNavigate(); // Initialize useNavigate hook
-
-  // Carousel State
-  const [currentSlide, setCurrentSlide] = useState(0);
-  // State to track the starting point of a touch for swiping logic
-  const [touchStartX, setTouchStartX] = useState(0);
-
-  // State to track if the user has already RSVP'd (by checking the cookie)
-  const [hasRSVPd, setHasRSVPd] = useState(false);
-
-  // Image Array - CORRECTED PATH to match uploaded file case
+  const navigate = useNavigate();
   const carouselImages = [
-    "picture-1.JPG",
-    "picture-2.JPG",
-    "picture-3.JPG",
-    "picture-4.JPG",
-    "picture-5.JPG",
+    "picture-1-min.JPG",
+    "picture-2-min.JPG",
+    "picture-3-min.JPG",
+    "picture-4-min.JPG",
+    "picture-5-min.JPG",
   ];
 
-  // Logic to advance the carousel to the next slide
-  const goToNextSlide = () => {
-    setCurrentSlide((prev) => (prev === carouselImages.length - 1 ? 0 : prev + 1));
-  };
+  // State
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [hasRSVPd, setHasRSVPd] = useState(false);
 
-  // Logic to go to the previous slide
-  const goToPrevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? carouselImages.length - 1 : prev - 1));
+  // Ref to hold the auto-play timer ID
+  const autoplayTimeoutRef = useRef(null);
+
+  // Function to move to the next slide (used by auto-play and swipe logic)
+  const goToNextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev === carouselImages.length - 1 ? 0 : prev + 1));
+  }, [carouselImages.length]);
+
+  // Function to reset the auto-play timer
+  const resetAutoplayTimer = useCallback(() => {
+    if (autoplayTimeoutRef.current) {
+      clearTimeout(autoplayTimeoutRef.current);
+    }
+    // Set a new timeout
+    autoplayTimeoutRef.current = setTimeout(goToNextSlide, AUTOPLAY_DELAY);
+  }, [goToNextSlide]);
+
+
+  // --- Carousel Auto-Rotation Effect ---
+  useEffect(() => {
+    // Initial start of the timer
+    resetAutoplayTimer();
+
+    // Cleanup function runs when component unmounts or dependencies change
+    return () => {
+      if (autoplayTimeoutRef.current) {
+        clearTimeout(autoplayTimeoutRef.current);
+      }
+    };
+  }, [resetAutoplayTimer]); // Re-run effect whenever resetAutoplayTimer changes (which it won't much, but good practice)
+
+
+  // --- Manual Slide Control (Dot Click) ---
+  const handleManualSlideChange = (index) => {
+    setCurrentSlide(index);
+    // Reset timer when a dot is clicked
+    resetAutoplayTimer();
   };
 
   // --- Swiping Handlers ---
+  const goToPrevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? carouselImages.length - 1 : prev - 1));
+    resetAutoplayTimer(); // Reset timer after swipe
+  };
+
   const handleTouchStart = (e) => {
     setTouchStartX(e.touches[0].clientX);
   };
@@ -46,14 +75,15 @@ const NoahsPage = () => {
   const handleTouchEnd = (e) => {
     const touchEndX = e.changedTouches[0].clientX;
     const swipeDistance = touchEndX - touchStartX;
-    const minSwipeDistance = 50; // Minimum distance to register a swipe
+    const minSwipeDistance = 50;
 
     if (swipeDistance > minSwipeDistance) {
       // Swiped right (previous slide)
       goToPrevSlide();
     } else if (swipeDistance < -minSwipeDistance) {
       // Swiped left (next slide)
-      goToNextSlide();
+      goToNextSlide(); // goToNextSlide already contains the reset logic via its dependency on resetAutoplayTimer
+      resetAutoplayTimer(); // Ensure timer reset happens regardless of callback dependencies
     }
     setTouchStartX(0); // Reset touch start
   };
@@ -68,7 +98,7 @@ const NoahsPage = () => {
     seconds: 0,
   });
 
-  // Countdown Logic (Using native Date object instead of unsupported Luxon)
+  // Countdown Logic
   useEffect(() => {
     // Target Date: March 28, 2026 at 6:00 PM EST (UTC-4)
     const targetDate = new Date('2026-03-28T18:00:00-04:00').getTime();
@@ -99,7 +129,6 @@ const NoahsPage = () => {
   // Check RSVP status from cookie on load
   useEffect(() => {
     const savedData = Cookies.get(COOKIE_NAME);
-    // If the cookie exists, assume the user has RSVP'd
     if (savedData) {
       setHasRSVPd(true);
     } else {
@@ -107,29 +136,19 @@ const NoahsPage = () => {
     }
   }, []);
 
-  // Carousel Auto-Rotation
-  useEffect(() => {
-    const slideInterval = setInterval(goToNextSlide, 3000);
-
-    return () => clearInterval(slideInterval);
-  }, [carouselImages.length]);
-
   // Shared Styles
   const sectionTitle = "text-3xl md:text-4xl text-[#4A2A05] mb-6 font-serif italic";
   const bodyText = "text-stone-600 font-light leading-relaxed";
 
   // Navigation function using react-router-dom
   const handleRSVPClick = () => {
-    // Navigates to the /rsvp route, which is handled by FormPage.jsx in App.jsx
     navigate('/rsvp');
   };
 
   return (
-    // FIX 1: Removed min-h-screen from mobile view (default) and added md:min-h-screen for desktop.
     <div className="flex flex-col md:flex-row bg-[#FDFBF7] font-serif md:min-h-screen">
 
       {/* Left side - Carousel Hero */}
-      {/* FIX 2: Changed h-[50vh] to h-96 for mobile/small view, allowing it to scroll past. */}
       {/* Added touch handlers for swiping */}
       <div
         className="relative w-full md:w-[55%] h-96 md:h-screen overflow-hidden group bg-stone-200 cursor-grab"
@@ -147,7 +166,6 @@ const NoahsPage = () => {
               <img
                 src={img}
                 alt={`Slide ${index + 1}`}
-                // Using object-contain to ensure the whole image fits without cropping
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   e.target.style.display = 'none';
@@ -177,7 +195,7 @@ const NoahsPage = () => {
           {carouselImages.map((_, index) => (
             <button
               key={index}
-              onClick={() => setCurrentSlide(index)}
+              onClick={() => handleManualSlideChange(index)} // Use new manual handler
               className={`w-3 h-3 rounded-full border border-white transition-all duration-300 ${currentSlide === index ? 'bg-white scale-110' : 'bg-transparent hover:bg-white/50'
                 }`}
               aria-label={`Go to slide ${index + 1}`}
