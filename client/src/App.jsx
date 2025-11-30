@@ -9,12 +9,20 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/password" element={<PasswordPage />} />
-        <Route element={<PrivateRoute />}>
-          {/* <Route path="/" element={<HomePage />} /> */}
-          <Route path="/" element={<NoahsPage />} />
-          <Route path="/rsvp" element={<FormPage />} />
-        </Route>
+
+
+        {/* <Route path="/" element={<HomePage />} /> */}
+        <Route path="/" element={<NoahsPage />} />
+        <Route path="/rsvp" element={<FormPage />} />
+
+
+        {/* <Route path="/password" element={<PasswordPage />} />  */}
+        {/* <Route element={<PrivateRoute />}> */}
+        {/* <Route path="/" element={<HomePage />} /> */}
+        {/* <Route path="/" element={<NoahsPage />} /> */}
+        {/* <Route path="/rsvp" element={<FormPage />} /> */}
+        {/* </Route> */}
+
       </Routes>
     </Router>
   );
