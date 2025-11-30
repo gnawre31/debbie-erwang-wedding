@@ -13,6 +13,8 @@ const NoahsPage = () => {
 
   // Carousel State
   const [currentSlide, setCurrentSlide] = useState(0);
+  // State to track the starting point of a touch for swiping logic
+  const [touchStartX, setTouchStartX] = useState(0);
 
   // State to track if the user has already RSVP'd (by checking the cookie)
   const [hasRSVPd, setHasRSVPd] = useState(false);
@@ -25,6 +27,38 @@ const NoahsPage = () => {
     "picture-4.JPG",
     "picture-5.JPG",
   ];
+
+  // Logic to advance the carousel to the next slide
+  const goToNextSlide = () => {
+    setCurrentSlide((prev) => (prev === carouselImages.length - 1 ? 0 : prev + 1));
+  };
+
+  // Logic to go to the previous slide
+  const goToPrevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? carouselImages.length - 1 : prev - 1));
+  };
+
+  // --- Swiping Handlers ---
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const swipeDistance = touchEndX - touchStartX;
+    const minSwipeDistance = 50; // Minimum distance to register a swipe
+
+    if (swipeDistance > minSwipeDistance) {
+      // Swiped right (previous slide)
+      goToPrevSlide();
+    } else if (swipeDistance < -minSwipeDistance) {
+      // Swiped left (next slide)
+      goToNextSlide();
+    }
+    setTouchStartX(0); // Reset touch start
+  };
+  // --- End Swiping Handlers ---
+
 
   // Countdown State
   const [countdown, setCountdown] = useState({
@@ -75,9 +109,7 @@ const NoahsPage = () => {
 
   // Carousel Auto-Rotation
   useEffect(() => {
-    const slideInterval = setInterval(() => {
-      setCurrentSlide((prev) => (prev === carouselImages.length - 1 ? 0 : prev + 1));
-    }, 3000);
+    const slideInterval = setInterval(goToNextSlide, 3000);
 
     return () => clearInterval(slideInterval);
   }, [carouselImages.length]);
@@ -93,10 +125,17 @@ const NoahsPage = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-[#FDFBF7] font-serif">
+    // FIX 1: Removed min-h-screen from mobile view (default) and added md:min-h-screen for desktop.
+    <div className="flex flex-col md:flex-row bg-[#FDFBF7] font-serif md:min-h-screen">
 
-      {/* Left side - Carousel Hero (The updated banner structure) */}
-      <div className="relative w-full md:w-[55%] h-[50vh] md:h-screen overflow-hidden group bg-stone-200">
+      {/* Left side - Carousel Hero */}
+      {/* FIX 2: Changed h-[50vh] to h-96 for mobile/small view, allowing it to scroll past. */}
+      {/* Added touch handlers for swiping */}
+      <div
+        className="relative w-full md:w-[55%] h-96 md:h-screen overflow-hidden group bg-stone-200 cursor-grab"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
 
         {/* Sliding Image Container */}
         <div
@@ -148,7 +187,7 @@ const NoahsPage = () => {
       </div>
 
       {/* Right side - Content Scroll */}
-      <div className="w-full md:w-[45%] h-[50vh] md:h-screen overflow-y-auto bg-[#FDFBF7] relative">
+      <div className="w-full md:w-[45%] md:h-screen md:overflow-y-auto bg-[#FDFBF7] relative">
 
         {/* Decorative Inner Border Container */}
         <div className="min-h-full p-6 md:p-12 relative">
