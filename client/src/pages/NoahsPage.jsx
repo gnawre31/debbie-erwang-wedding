@@ -263,7 +263,7 @@ const NoahsPage = () => {
                 <div className="flex justify-center mb-4 opacity-80">
                   <MapPin className="text-[#4A2A05] w-6 h-6" />
                 </div>
-                <h3 className={sectionTitle}>The Ceremony</h3>
+                <h3 className={sectionTitle}>The Ceremony and Reception</h3>
                 <p className="font-bold text-[#4A2A05] uppercase tracking-wide text-sm mb-2 font-sans">Cluny Bistro & Boulangerie</p>
                 <p className={bodyText}>35 Tank House Lane</p>
                 <p className={bodyText}>Distillery District, Toronto</p>
