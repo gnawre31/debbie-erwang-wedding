@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Wine, HelpCircle } from 'lucide-react';
+import { MapPin, Wine, HelpCircle, Utensils } from 'lucide-react'; // Added Utensils icon here
 import Cookies from 'js-cookie';
 
 // Constant must match the one used in FormPage.jsx
@@ -40,32 +40,26 @@ const NoahsPage = () => {
     autoplayTimeoutRef.current = setTimeout(goToNextSlide, AUTOPLAY_DELAY);
   }, [goToNextSlide]);
 
-
   // --- Carousel Auto-Rotation Effect ---
   useEffect(() => {
-    // Initial start of the timer
     resetAutoplayTimer();
-
-    // Cleanup function runs when component unmounts or dependencies change
     return () => {
       if (autoplayTimeoutRef.current) {
         clearTimeout(autoplayTimeoutRef.current);
       }
     };
-  }, [resetAutoplayTimer]); // Re-run effect whenever resetAutoplayTimer changes (which it won't much, but good practice)
-
+  }, [resetAutoplayTimer]);
 
   // --- Manual Slide Control (Dot Click) ---
   const handleManualSlideChange = (index) => {
     setCurrentSlide(index);
-    // Reset timer when a dot is clicked
     resetAutoplayTimer();
   };
 
   // --- Swiping Handlers ---
   const goToPrevSlide = () => {
     setCurrentSlide((prev) => (prev === 0 ? carouselImages.length - 1 : prev - 1));
-    resetAutoplayTimer(); // Reset timer after swipe
+    resetAutoplayTimer();
   };
 
   const handleTouchStart = (e) => {
@@ -78,17 +72,13 @@ const NoahsPage = () => {
     const minSwipeDistance = 50;
 
     if (swipeDistance > minSwipeDistance) {
-      // Swiped right (previous slide)
       goToPrevSlide();
     } else if (swipeDistance < -minSwipeDistance) {
-      // Swiped left (next slide)
-      goToNextSlide(); // goToNextSlide already contains the reset logic via its dependency on resetAutoplayTimer
-      resetAutoplayTimer(); // Ensure timer reset happens regardless of callback dependencies
+      goToNextSlide();
+      resetAutoplayTimer();
     }
-    setTouchStartX(0); // Reset touch start
+    setTouchStartX(0);
   };
-  // --- End Swiping Handlers ---
-
 
   // Countdown State
   const [countdown, setCountdown] = useState({
@@ -100,7 +90,6 @@ const NoahsPage = () => {
 
   // Countdown Logic
   useEffect(() => {
-    // Target Date: March 28, 2026 at 6:00 PM EST (UTC-4)
     const targetDate = new Date('2026-03-28T18:00:00-04:00').getTime();
 
     const updateCountdown = () => {
@@ -149,14 +138,11 @@ const NoahsPage = () => {
     <div className="flex flex-col md:flex-row bg-[#FDFBF7] font-serif md:min-h-screen">
 
       {/* Left side - Carousel Hero */}
-      {/* Added touch handlers for swiping */}
       <div
         className="relative w-full md:w-[55%] h-96 md:h-screen overflow-hidden group bg-stone-200 cursor-grab"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-
-        {/* Sliding Image Container */}
         <div
           className="flex h-full w-full transition-transform duration-700 ease-in-out"
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -177,10 +163,8 @@ const NoahsPage = () => {
           ))}
         </div>
 
-        {/* Elegant Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#2c1a03]/60 via-transparent to-transparent pointer-events-none" />
 
-        {/* Text Content */}
         <div className="absolute bottom-12 md:bottom-20 left-0 right-0 text-center text-white px-4 z-10 pointer-events-none">
           <p className="uppercase tracking-[0.3em] text-xs md:text-sm mb-4 opacity-90 font-sans">
             The Wedding Of
@@ -190,12 +174,11 @@ const NoahsPage = () => {
           </h1>
         </div>
 
-        {/* Carousel Dots Navigation */}
         <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3 z-20">
           {carouselImages.map((_, index) => (
             <button
               key={index}
-              onClick={() => handleManualSlideChange(index)} // Use new manual handler
+              onClick={() => handleManualSlideChange(index)}
               className={`w-3 h-3 rounded-full border border-white transition-all duration-300 ${currentSlide === index ? 'bg-white scale-110' : 'bg-transparent hover:bg-white/50'
                 }`}
               aria-label={`Go to slide ${index + 1}`}
@@ -206,10 +189,7 @@ const NoahsPage = () => {
 
       {/* Right side - Content Scroll */}
       <div className="w-full md:w-[45%] md:h-screen md:overflow-y-auto bg-[#FDFBF7] relative">
-
-        {/* Decorative Inner Border Container */}
         <div className="min-h-full p-6 md:p-12 relative">
-          {/* The "Paper" Border */}
           <div className="absolute inset-4 md:inset-6 border border-[#4A2A05] border-opacity-20 pointer-events-none"></div>
 
           <div className="relative z-10 flex flex-col items-center pt-12 md:pt-20 pb-12">
@@ -242,23 +222,22 @@ const NoahsPage = () => {
               ))}
             </div>
 
-            {/* --- RSVP Button (Conditional Text) --- */}
+            {/* --- RSVP Button --- */}
             <div className="mb-16 w-full max-w-xs mx-auto">
               <button
-                onClick={handleRSVPClick} // Use the routing function
+                onClick={handleRSVPClick}
                 className="w-full py-4 px-8 border border-[#4A2A05] text-[#4A2A05] uppercase tracking-[0.2em] text-xs hover:bg-[#4A2A05] hover:text-white transition-all duration-500 ease-in-out font-sans rounded-full"
               >
                 {hasRSVPd ? "Edit RSVP" : "RSVP Online"}
               </button>
             </div>
 
-            {/* --- Divider --- */}
             <div className="w-12 h-px bg-[#4A2A05] opacity-30 mb-16"></div>
 
             {/* --- Details Sections --- */}
             <div className="w-full max-w-md space-y-16 text-center px-4">
 
-              {/* Location (Using Lucide icon) */}
+              {/* Location */}
               <section>
                 <div className="flex justify-center mb-4 opacity-80">
                   <MapPin className="text-[#4A2A05] w-6 h-6" />
@@ -277,7 +256,7 @@ const NoahsPage = () => {
                 </a>
               </section>
 
-              {/* Schedule (Using Lucide icon) */}
+              {/* Schedule */}
               <section>
                 <div className="flex justify-center mb-4 opacity-80">
                   <Wine className="text-[#4A2A05] w-6 h-6" />
@@ -315,7 +294,93 @@ const NoahsPage = () => {
                 </div>
               </section>
 
-              {/* FAQ (Using Lucide icon) */}
+              {/* Menu */}
+              <section>
+                <div className="flex justify-center mb-4 opacity-80">
+                  <Utensils className="text-[#4A2A05] w-6 h-6" />
+                </div>
+                <h3 className={sectionTitle}>The Menu</h3>
+                <div className="text-left">
+                  <p className={`${bodyText} text-center italic mb-4`}>
+                    You do not need to pre-select your meal. You will be able to choose your preferred dish for each course right at your table.
+                  </p>
+                  <p className={`${bodyText} text-center italic mb-10`}>
+                    Wine, beer, liquor, and non-alcoholic beverages will be available for you to enjoy throughout the evening.
+                  </p>
+
+                  {/* Appetizers */}
+                  <div className="mb-8">
+                    <div className="flex justify-between items-baseline border-b border-[#4A2A05] border-opacity-20 pb-1 mb-4">
+                      <p className="font-bold text-[#4A2A05] uppercase tracking-wide font-sans text-sm">Appetizers</p>
+                      <p className="text-[#4A2A05] text-xs font-sans tracking-widest">8:30 PM</p>
+                    </div>
+                    <ul className="space-y-4">
+                      <li>
+                        <p className="font-bold text-stone-700 font-sans text-sm">Beef Tartare</p>
+                        <p className="text-stone-500 text-sm italic font-light">Traditional garnishes, crostini, and horseradish crème fraîche (Nut free)</p>
+                      </li>
+                      <li>
+                        <p className="font-bold text-stone-700 font-sans text-sm">Sea Bream Ceviche</p>
+                        <p className="text-stone-500 text-sm italic font-light">Orange segments, chili, and olive oil (Dairy free, gluten free, nut free)</p>
+                      </li>
+                      <li>
+                        <p className="font-bold text-stone-700 font-sans text-sm">Baby Gem Salad</p>
+                        <p className="text-stone-500 text-sm italic font-light">Buttermilk ranch dressing, cucumber, dill, radish, and pickled pearl onion (Gluten free, nut free, vegetarian)</p>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Entrées */}
+                  <div className="mb-8">
+                    <div className="flex justify-between items-baseline border-b border-[#4A2A05] border-opacity-20 pb-1 mb-4">
+                      <p className="font-bold text-[#4A2A05] uppercase tracking-wide font-sans text-sm">Entrées</p>
+                      <p className="text-[#4A2A05] text-xs font-sans tracking-widest">9:05 PM</p>
+                    </div>
+                    <ul className="space-y-4">
+                      <li>
+                        <p className="font-bold text-stone-700 font-sans text-sm">Seared Black Cod</p>
+                        <p className="text-stone-500 text-sm italic font-light">Haricot verts, celeriac and apple velouté, hazelnuts, and brown butter (Gluten free, contains nuts)</p>
+                      </li>
+                      <li>
+                        <p className="font-bold text-stone-700 font-sans text-sm">6oz Seared Beef Tenderloin</p>
+                        <p className="text-stone-500 text-sm italic font-light">Duck fat potato pavé, braised mushrooms, wilted spinach, and demi glace (Gluten free, nut free, dairy free)</p>
+                      </li>
+                      <li>
+                        <p className="font-bold text-stone-700 font-sans text-sm">Duck Leg Confit</p>
+                        <p className="text-stone-500 text-sm italic font-light">Braised lentils, carrot, and tonka bean purée (Gluten free, dairy free, nut free)</p>
+                      </li>
+                      <li>
+                        <p className="font-bold text-stone-700 font-sans text-sm">Roasted Ratatouille</p>
+                        <p className="text-stone-500 text-sm italic font-light">Chickpea panisse, roasted eggplant, peppers, tomatoes, and zucchini (Vegan, gluten free, nut free, dairy free)</p>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Dessert */}
+                  <div>
+                    <div className="flex justify-between items-baseline border-b border-[#4A2A05] border-opacity-20 pb-1 mb-4">
+                      <p className="font-bold text-[#4A2A05] uppercase tracking-wide font-sans text-sm">Dessert</p>
+                      <p className="text-[#4A2A05] text-xs font-sans tracking-widest">9:55 PM</p>
+                    </div>
+                    <ul className="space-y-4">
+                      <li>
+                        <p className="font-bold text-stone-700 font-sans text-sm">Dark Chocolate Mousse</p>
+                        <p className="text-stone-500 text-sm italic font-light">Hazelnut croquant, sponge cake, and orange crème (Vegetarian, contains nuts)</p>
+                      </li>
+                      <li>
+                        <p className="font-bold text-stone-700 font-sans text-sm">Strawberry Matcha Profiterole</p>
+                        <p className="text-stone-500 text-sm italic font-light">Fresh strawberries and buckwheat crumble (Nut free, vegetarian)</p>
+                      </li>
+                      <li>
+                        <p className="font-bold text-stone-700 font-sans text-sm">Mango Coconut Cake</p>
+                        <p className="text-stone-500 text-sm italic font-light">Passion fruit glaze, almond tuile, and mango gel (Contains nuts)</p>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </section>
+
+              {/* FAQ */}
               <section className="pb-8">
                 <div className="flex justify-center mb-4 opacity-80">
                   <HelpCircle className="text-[#4A2A05] w-6 h-6" />
@@ -340,7 +405,7 @@ const NoahsPage = () => {
                       <li>A Green P parking lot on Distillery Lane.</li>
                     </ul>
                     <p className={`${bodyText} mt-4`}>
-                      For a visual guide, please consult the official&nbsp;
+                      For a visual guide, please consult the official
                       <a
                         href="https://www.thedistillerydistrict.com/directions-parking/"
                         target="_blank"
@@ -350,7 +415,7 @@ const NoahsPage = () => {
                         DISTILLERY DISTRICT PARKING MAP
                       </a>.
                       <br />
-                      For current rates and other options, you can check the&nbsp;
+                      For current rates and other options, you can check the
                       <a
                         href="https://parking.greenp.com/"
                         target="_blank"
@@ -362,8 +427,8 @@ const NoahsPage = () => {
                     </p>
                   </div>
                   <div>
-                    <p className="font-bold text-[#4A2A05] text-sm mb-1 font-sans">What will be served for dinner?</p>
-                    <p className={bodyText}>More details will be shared closer to March 2026. Stay tuned!</p>
+                    <p className="font-bold text-[#4A2A05] text-sm mb-1 font-sans">Do I need to choose my meal ahead of time?</p>
+                    <p className={bodyText}>No! You can browse the menu above and place your order directly at your table during the reception.</p>
                   </div>
                   <div>
                     <p className="font-bold text-[#4A2A05] text-sm mb-1 font-sans">I have allergies or dietary restrictions</p>
@@ -379,7 +444,7 @@ const NoahsPage = () => {
                   </div>
                   <div>
                     <p className="font-bold text-[#4A2A05] text-sm mb-1 font-sans">What is the dress code?</p>
-                    <p className={bodyText}>Semi-formal but comfortable!</p>
+                    <p className={bodyText}>Business casual. We kindly ask that you please avoid wearing navy blue suits or white dresses!</p>
                   </div>
                   <div>
                     <p className="font-bold text-[#4A2A05] text-sm mb-1 font-sans">I have more questions</p>
@@ -396,5 +461,4 @@ const NoahsPage = () => {
   );
 };
 
-// We export the component directly now that it's using router hooks.
 export default NoahsPage;
