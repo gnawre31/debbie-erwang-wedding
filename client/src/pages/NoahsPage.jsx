@@ -444,7 +444,7 @@ const NoahsPage = () => {
                   </div>
                   <div>
                     <p className="font-bold text-[#4A2A05] text-sm mb-1 font-sans">What is the dress code?</p>
-                    <p className={bodyText}>Business casual. We kindly ask that you please avoid wearing navy blue suits or white dresses!</p>
+                    <p className={bodyText}>Semi-formal. We kindly ask that you please avoid wearing navy blue suits or white dresses!</p>
                   </div>
                   <div>
                     <p className="font-bold text-[#4A2A05] text-sm mb-1 font-sans">I have more questions</p>
